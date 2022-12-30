@@ -7,10 +7,49 @@ services:
 # The Hyper Application
 - type: web
   name: hyper
+  # Change to the desired Render plan
   plan: starter
   env: docker
   dockerfilePath: ./app/Dockerfile
   dockerContext: ./app
   envVars:
     - key: SECRET
+      generateValue: true
+    # Include the CouchDB credentials in the hyper app runtime environment
+    - key: COUCHDB_USER
+      fromService:
+        name: couchdb
+        type: pserv
+        envVarKey: COUCHDB_USER
+    - key: COUCHDB_PASSWORD
+      fromService:
+        name: couchdb
+        type: pserv
+        envVarKey: COUCHDB_PASSWORD
+    # Include the CouchDB host url
+    - key: COUCHDB_HOST
+      fromService:
+        name: couchdb
+        type: pserv
+        property: host
+
+# CouchDB Server powering hyper Data
+- type: pserv
+  name: couchdb
+  env: docker
+  # Change to the desired Render plan
+  plan: starter
+  dockerfilePath: ./data/Dockerfile
+  dockerContext: ./data
+  # Use a Render Disk to persist data
+  disk:
+    name: couchdata
+    mountPath: /opt/couchdb/data
+    # Change this value if you'd like more DB storage
+    sizeGB: 5
+  autoDeploy: false
+  envVars:
+    - key: COUCHDB_USER
+      generateValue: true
+    - key: COUCHDB_PASSWORD
       generateValue: true
