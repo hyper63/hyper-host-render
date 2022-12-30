@@ -1,0 +1,16 @@
+# If your hyper app exists in a sub-directory of your repo ie. monorepo,
+# Set the path here to the root of your hyper configuration
+# rootDir: apps/hyper
+
+services:
+
+# The Hyper Application
+- type: web
+  name: hyper
+  plan: starter
+  env: docker
+  dockerfilePath: ./app/Dockerfile
+  dockerContext: ./app
+  envVars:
+    - key: SECRET
+      generateValue: true
