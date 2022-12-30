@@ -1,0 +1,4 @@
+{
+  "*.{md,json,yml,css,js,ts}": ["deno fmt"],
+  "README.md": ["deno run -A npm:markdown-toc-gen@1 insert", "deno fmt"]
+}

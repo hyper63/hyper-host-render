@@ -1,0 +1,17 @@
+image:
+  file: .gitpod.Dockerfile
+
+tasks:
+  - name: Prepare Hooks
+  - init: deno task prepare
+
+ports:
+  - port: 6363
+    onOpen: ignore
+    visibility: public
+
+vscode:
+  extensions:
+    - "denoland.vscode-deno"
+    - "ms-azuretools.vscode-docker"
+    

@@ -1,0 +1,22 @@
+{
+  "$schema": "https://deno.land/x/deno/cli/schemas/config-file.v1.json",
+  "description": "Recipe for deploying the hyper Service Framework to Render using their Infra as Code feature",
+  "tasks": {
+    "prepare": "deno run -A npm:husky@^8 install",
+    "staged": "deno run -A npm:lint-staged@^13"
+  },
+  "lint": {
+    "rules": {
+      "tags": ["recommended"]
+    }
+  },
+  "fmt": {
+    "options": {
+      "useTabs": false,
+      "lineWidth": 100,
+      "indentWidth": 2,
+      "singleQuote": true
+    }
+  },
+  "lock": false
+}
