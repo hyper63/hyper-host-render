@@ -1,15 +1,13 @@
 // deno-lint-ignore-file no-explicit-any
 
-import {
-  jwt,
-  type NextFunction,
-  type Opine,
-  type OpineRequest,
-  type OpineResponse,
-} from './deps.ts';
+import { type NextFunction, type Opine, type OpineRequest, type OpineResponse } from './deps.ts';
 
+// deno-lint-ignore no-unused-vars
 export const authMiddleware = (secret: string) => (app: Opine) => {
-  app.use(jwt({ secret, algorithms: ['HS256'] }).unless({ path: ['/'] }));
+  app.use((_req, _res, next) => {
+    // TODO: implement authorization check
+    next();
+  });
 
   app.use(
     (
