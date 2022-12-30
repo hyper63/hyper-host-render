@@ -44,6 +44,12 @@ services:
         name: redis
         type: pserv
         property: port
+    # Include the Elasticsearch host url
+    - key: ELASTICSEARCH_HOST
+      fromService:
+        name: elasticsearch
+        type: pserv
+        property: hostport
 
 # CouchDB Server powering hyper Data
 - type: pserv
@@ -80,3 +86,26 @@ services:
     mountPath: /var/lib/redis
     # Change this value if you'd like more cache storage
     sizeGB: 5
+
+# Elasticsearch
+- type: pserv
+  name: elasticsearch
+  env: docker
+  # Change to the desired Render plan
+  # NOTE: this has to be at least standard or Elasticsearch errors due to insufficient memory -___-
+  plan: standard
+  dockerfilePath: ./search/Dockerfile
+  dockerContext: ./search
+  disk:
+    name: esdata
+    mountPath: /usr/share/elasticsearch/data
+    # Change this value if you'd like more index storage
+    sizeGB: 10
+  autoDeploy: false
+  envVars:
+    - key: ES_JAVA_OPTS
+      value: "-Xms512m -Xmx512m"
+    - key: discovery.type
+      value: single-node
+    - key: cluster.name
+      value: elastic

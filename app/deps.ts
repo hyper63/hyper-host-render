@@ -11,3 +11,4 @@ export { default as app } from 'https://x.nest.land/hyper-app-opine@2.3.0/mod.js
 
 export { default as couchdb } from 'https://x.nest.land/hyper-adapter-couchdb@3.0.2/mod.js';
 export { default as redis } from 'https://x.nest.land/hyper-adapter-redis@2.2.0/mod.js';
+export { default as elasticsearch } from 'https://x.nest.land/hyper-adapter-elasticsearch@2.0.1/mod.js';
