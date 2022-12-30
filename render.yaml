@@ -32,6 +32,18 @@ services:
         name: couchdb
         type: pserv
         property: host
+    # Include the Redis host url
+    - key: REDIS_HOST
+      fromService:
+        name: redis
+        type: pserv
+        property: host
+    # Include the Redis Port
+    - key: REDIS_PORT
+      fromService:
+        name: redis
+        type: pserv
+        property: port
 
 # CouchDB Server powering hyper Data
 - type: pserv
@@ -53,3 +65,18 @@ services:
       generateValue: true
     - key: COUCHDB_PASSWORD
       generateValue: true
+
+# Redis
+- type: pserv
+  name: redis
+  env: docker
+  dockerfilePath: ./cache/Dockerfile
+  dockerContext: ./cache
+  # Change to the desired Render plan
+  plan: starter
+  autoDeploy: false
+  disk:
+    name: redisdata
+    mountPath: /var/lib/redis
+    # Change this value if you'd like more cache storage
+    sizeGB: 5

@@ -32,7 +32,7 @@ Using the `render.yaml` file, 6 `docker` services are provisioned:
 
 - [x] The hyper Service, using the RESTful api, so that you may consume your services over Http.
 - [x] CouchDB to power hyper data
-- [ ] Redis to power hyper cache
+- [x] Redis to power hyper cache
 - [ ] Elasticsearch to power hyper search
 - [ ] Minio to power hyper storage
 - [ ] RabbitMQ to power hyper queue
