@@ -1,4 +1,4 @@
-import { app, elasticsearch, type express, hyper, mongodb, redis } from './deps.ts';
+import { app, elasticsearch, type express, hyper, minio, mongodb, redis } from './deps.ts';
 import { env, verifyAuthorizationHeader } from './utils.ts';
 
 /**
@@ -54,6 +54,19 @@ export default hyper({
       ],
     },
     { port: 'search', plugins: [elasticsearch({ url: `http://${env('ELASTICSEARCH_HOST')}` })] },
+    // Use the public url, so presigned url signatures match
+    {
+      port: 'storage',
+      plugins: [
+        minio({
+          url: `https://${env('MINIO_USERNAME')}:${env('MINIO_PASSWORD')}@${
+            env('MINIO_HOST')
+          }.onrender.com`,
+          bucketPrefix: 'hyper',
+          useNamespacedBucket: false,
+        }),
+      ],
+    },
   ],
   middleware: [authMiddleware({ sub: env('SUB'), secret: env('SECRET') })],
 });

@@ -33,8 +33,8 @@ Using the `render.yaml` file, 6 `docker` services are provisioned:
 - [x] The hyper Service, using the RESTful api, so that you may consume your services over Http.
 - [x] MongoDB to power hyper data
 - [x] Redis to power hyper cache
-- [ ] Elasticsearch to power hyper search
-- [ ] Minio to power hyper storage
+- [x] Elasticsearch to power hyper search
+- [x] Minio to power hyper storage
 - [ ] RabbitMQ to power hyper queue
 
 Where needed a [Render Disk](https://render.com/docs/disks) is mounted on the service, for

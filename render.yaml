@@ -51,6 +51,23 @@ services:
           name: elasticsearch
           type: pserv
           property: hostport
+      # Include the MinIO credentials in the hyper app runtime environment
+      - key: MINIO_USERNAME
+        fromService:
+          name: minio
+          type: web
+          envVarKey: MINIO_ROOT_USER
+      - key: MINIO_PASSWORD
+        fromService:
+          name: minio
+          type: web
+          envVarKey: MINIO_ROOT_PASSWORD
+      # Include the MinIO host url
+      - key: MINIO_HOST
+        fromService:
+          name: minio
+          type: web
+          property: host
 
   # MongoDB Server powering hyper Data
   - type: pserv
@@ -110,3 +127,23 @@ services:
         value: single-node
       - key: cluster.name
         value: elastic
+
+  # MinIO Server
+  # In order for MinIO to accept requests using presigned urls,
+  # the server must be made public
+  - type: web
+    name: minio
+    env: docker
+    plan: starter
+    dockerfilePath: ./storage/Dockerfile
+    dockerContext: ./storage
+    disk:
+      name: miniodata
+      mountPath: /data
+      sizeGB: 5
+    autoDeploy: false
+    envVars:
+      - key: MINIO_ROOT_USER
+        generateValue: true
+      - key: MINIO_ROOT_PASSWORD
+        generateValue: true
