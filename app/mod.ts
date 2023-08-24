@@ -1,34 +1,59 @@
-import { authMiddleware } from './auth.ts';
-import { app, couchdb, elasticsearch, hyper, redis, z } from './deps.ts';
+import { app, elasticsearch, type express, hyper, mongodb, redis } from './deps.ts';
+import { env, verifyAuthorizationHeader } from './utils.ts';
 
-function env(key: string): string {
-  const res = z.string().min(1).safeParse(Deno.env.get(key));
-  if (!res.success) {
-    console.error(`Error with ENV VAR: ${key}`);
-    throw res.error;
-  }
-  return res.data;
-}
+/**
+ * Given a sub and secret, return a hyper middleware that will
+ * check that all incoming requests have a properly signed jwt token
+ * in the authorization header
+ */
+const authMiddleware =
+  ({ sub, secret }: { sub: string; secret: string }) => (app: express.Express) => {
+    const verify = verifyAuthorizationHeader({ sub, secret });
+    app.use(async (req, _res, next) => {
+      await verify(req.get('authorization') || 'Bearer notoken')
+        .then(() => next())
+        // pass error to next, triggering the next error middleware to take over
+        .catch(next);
+    });
 
-const COUCH = `http://${env('COUCHDB_USER')}:${env('COUCHDB_PASSWORD')}@${
-  env(
-    'COUCHDB_HOST',
-  )
-}:5984`;
+    app.use(
+      (
+        // deno-lint-ignore no-explicit-any
+        err: any,
+        _req: express.Request,
+        res: express.Response,
+        next: express.NextFunction,
+      ): unknown => {
+        if (err && err.name === 'UnauthorizedError') {
+          return res.status(401).send({ ok: false, msg: 'not authorized' });
+        }
+        // Trigger the next error handler
+        next(err);
+      },
+    );
 
-const REDIS = {
-  hostname: env('REDIS_HOST'),
-  port: env('REDIS_PORT'),
-};
-
-const ELASTICSEARCH = `http://${env('ELASTICSEARCH_HOST')}`;
+    return app;
+  };
 
 export default hyper({
   app,
   adapters: [
-    { port: 'data', plugins: [couchdb({ url: COUCH })] },
-    { port: 'cache', plugins: [redis(REDIS)] },
-    { port: 'search', plugins: [elasticsearch({ url: ELASTICSEARCH })] },
+    {
+      port: 'data',
+      plugins: [
+        mongodb({
+          url: `mongodb://${env('MONGO_USERNAME')}:${env('MONGO_PASSWORD')}@${env('MONGO_HOST')}`,
+        }),
+      ],
+    },
+    {
+      port: 'cache',
+      plugins: [
+        // @ts-ignore incorrect types in the adapter, so safe to ignore for now
+        redis({ hostname: env('REDIS_HOST'), port: env('REDIS_PORT') }),
+      ],
+    },
+    { port: 'search', plugins: [elasticsearch({ url: `http://${env('ELASTICSEARCH_HOST')}` })] },
   ],
-  middleware: [authMiddleware(env('SECRET'))],
+  middleware: [authMiddleware({ sub: env('SUB'), secret: env('SECRET') })],
 });

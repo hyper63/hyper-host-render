@@ -1,14 +1,17 @@
 export { z } from 'https://deno.land/x/zod@v3.20.2/mod.ts';
-export type {
-  NextFunction,
-  Opine,
-  OpineRequest,
-  OpineResponse,
-} from 'https://deno.land/x/opine@2.3.3/mod.ts';
+// See https://deno.land/manual@v1.31.1/advanced/typescript/types#providing-types-when-importing
+// @deno-types="npm:@types/express@^4.17"
+export { default as express } from 'npm:express@4.18.2';
 
-export { default as hyper } from 'https://x.nest.land/hyper@3.4.2/mod.js';
-export { default as app } from 'https://x.nest.land/hyper-app-opine@2.3.0/mod.js';
+export * as jwt from 'https://deno.land/x/djwt@v2.2/mod.ts';
 
-export { default as couchdb } from 'https://x.nest.land/hyper-adapter-couchdb@3.0.2/mod.js';
-export { default as redis } from 'https://x.nest.land/hyper-adapter-redis@2.2.0/mod.js';
-export { default as elasticsearch } from 'https://x.nest.land/hyper-adapter-elasticsearch@2.0.1/mod.js';
+// hyper core
+export { default as hyper } from 'https://raw.githubusercontent.com/hyper63/hyper/hyper%40v4.2.0/packages/core/mod.ts';
+// hyper driving adapter
+export { default as app } from 'https://raw.githubusercontent.com/hyper63/hyper/hyper-app-express%40v1.2.0/packages/app-express/mod.ts';
+
+// hyper driven adapters
+export { default as mongodb } from 'https://raw.githubusercontent.com/hyper63/hyper-adapter-mongodb/v3.1.3/mod.ts';
+export { default as redis } from 'https://raw.githubusercontent.com/hyper63/hyper-adapter-redis/v3.0.0/mod.js';
+export { default as hooks } from 'https://raw.githubusercontent.com/hyper63/hyper-adapter-hooks/v1.0.6/mod.js';
+export { default as elasticsearch } from 'https://raw.githubusercontent.com/hyper63/hyper-adapter-elasticsearch/v2.0.2/mod.js';

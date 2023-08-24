@@ -3,109 +3,110 @@
 # rootDir: apps/hyper
 
 services:
+  # The Hyper Application
+  - type: web
+    name: hyper
+    # Change to the desired Render plan
+    plan: starter
+    env: docker
+    dockerfilePath: ./app/Dockerfile
+    dockerContext: ./app
+    envVars:
+      # key and secret for accessing the hyper server
+      - key: SUB
+        generateValue: true
+      - key: SECRET
+        generateValue: true
+      # Include the MongoDB credentials in the hyper app runtime environment
+      - key: MONGO_USERNAME
+        fromService:
+          name: mongodb
+          type: pserv
+          envVarKey: MONGO_INITDB_ROOT_USERNAME
+      - key: MONGO_PASSWORD
+        fromService:
+          name: mongodb
+          type: pserv
+          envVarKey: MONGO_INITDB_ROOT_PASSWORD
+      # Include the MongoDB host url and port
+      - key: MONGO_HOST
+        fromService:
+          name: mongodb
+          type: pserv
+          property: hostport
+      # Include the Redis host url and port
+      - key: REDIS_HOST
+        fromService:
+          name: redis
+          type: pserv
+          property: host
+      - key: REDIS_PORT
+        fromService:
+          name: redis
+          type: pserv
+          property: port
+      # Include the Elasticsearch host url
+      - key: ELASTICSEARCH_HOST
+        fromService:
+          name: elasticsearch
+          type: pserv
+          property: hostport
 
-# The Hyper Application
-- type: web
-  name: hyper
-  # Change to the desired Render plan
-  plan: starter
-  env: docker
-  dockerfilePath: ./app/Dockerfile
-  dockerContext: ./app
-  envVars:
-    - key: SECRET
-      generateValue: true
-    # Include the CouchDB credentials in the hyper app runtime environment
-    - key: COUCHDB_USER
-      fromService:
-        name: couchdb
-        type: pserv
-        envVarKey: COUCHDB_USER
-    - key: COUCHDB_PASSWORD
-      fromService:
-        name: couchdb
-        type: pserv
-        envVarKey: COUCHDB_PASSWORD
-    # Include the CouchDB host url
-    - key: COUCHDB_HOST
-      fromService:
-        name: couchdb
-        type: pserv
-        property: host
-    # Include the Redis host url
-    - key: REDIS_HOST
-      fromService:
-        name: redis
-        type: pserv
-        property: host
-    # Include the Redis Port
-    - key: REDIS_PORT
-      fromService:
-        name: redis
-        type: pserv
-        property: port
-    # Include the Elasticsearch host url
-    - key: ELASTICSEARCH_HOST
-      fromService:
-        name: elasticsearch
-        type: pserv
-        property: hostport
+  # MongoDB Server powering hyper Data
+  - type: pserv
+    name: mongodb
+    env: docker
+    # Change to the desired Render plan
+    plan: starter
+    dockerfilePath: ./data/Dockerfile
+    dockerContext: ./data
+    # Use a Render Disk to persist data
+    disk:
+      name: mongodbdata
+      mountPath: /data/db
+      # Change this value if you'd like more DB storage
+      sizeGB: 5
+    autoDeploy: false
+    envVars:
+      - key: MONGO_INITDB_ROOT_USERNAME
+        generateValue: true
+      - key: MONGO_INITDB_ROOT_PASSWORD
+        generateValue: true
 
-# CouchDB Server powering hyper Data
-- type: pserv
-  name: couchdb
-  env: docker
-  # Change to the desired Render plan
-  plan: starter
-  dockerfilePath: ./data/Dockerfile
-  dockerContext: ./data
-  # Use a Render Disk to persist data
-  disk:
-    name: couchdata
-    mountPath: /opt/couchdb/data
-    # Change this value if you'd like more DB storage
-    sizeGB: 5
-  autoDeploy: false
-  envVars:
-    - key: COUCHDB_USER
-      generateValue: true
-    - key: COUCHDB_PASSWORD
-      generateValue: true
+  # Redis
+  - type: pserv
+    name: redis
+    env: docker
+    dockerfilePath: ./cache/Dockerfile
+    dockerContext: ./cache
+    # Change to the desired Render plan
+    plan: starter
+    autoDeploy: false
+    disk:
+      name: redisdata
+      mountPath: /var/lib/redis
+      # Change this value if you'd like more cache storage
+      sizeGB: 5
 
-# Redis
-- type: pserv
-  name: redis
-  env: docker
-  dockerfilePath: ./cache/Dockerfile
-  dockerContext: ./cache
-  # Change to the desired Render plan
-  plan: starter
-  autoDeploy: false
-  disk:
-    name: redisdata
-    mountPath: /var/lib/redis
-    # Change this value if you'd like more cache storage
-    sizeGB: 5
-
-# Elasticsearch
-- type: pserv
-  name: elasticsearch
-  env: docker
-  # Change to the desired Render plan
-  # NOTE: this has to be at least standard or Elasticsearch errors due to insufficient memory -___-
-  plan: standard
-  dockerfilePath: ./search/Dockerfile
-  dockerContext: ./search
-  disk:
-    name: esdata
-    mountPath: /usr/share/elasticsearch/data
-    # Change this value if you'd like more index storage
-    sizeGB: 10
-  autoDeploy: false
-  envVars:
-    - key: ES_JAVA_OPTS
-      value: "-Xms512m -Xmx512m"
-    - key: discovery.type
-      value: single-node
-    - key: cluster.name
-      value: elastic
+  # Elasticsearch
+  - type: pserv
+    name: elasticsearch
+    env: docker
+    # Change to the desired Render plan
+    # NOTE: this has to be at least standard or Elasticsearch errors due to insufficient memory -___-
+    plan: standard
+    dockerfilePath: ./search/Dockerfile
+    dockerContext: ./search
+    disk:
+      name: esdata
+      mountPath: /usr/share/elasticsearch/data
+      # Change this value if you'd like more index storage
+      sizeGB: 10
+    autoDeploy: false
+    envVars:
+      - key: ES_JAVA_OPTS
+        value: "-Xms512m -Xmx512m"
+      - key: discovery.type
+        value: single-node
+      - key: cluster.name
+        value: elastic
