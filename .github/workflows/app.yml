@@ -1,0 +1,42 @@
+name: ⚡️ hyper App
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "app/**"
+  pull_request:
+    branches:
+      - "**"
+    paths:
+      - "app/**"
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  CI: true
+
+jobs:
+  test:
+    name: ⚡ Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v3
+
+      - name: 🦕 Setup Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: 1.x
+
+      - name: ⚡ Run Tests
+        run: |
+          cd app
+          deno task test
+        env:
+          SUB: foo
+          SECRET: bar
