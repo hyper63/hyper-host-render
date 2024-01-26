@@ -69,14 +69,14 @@ services:
           type: web
           property: host
 
-  # MongoDB Server powering hyper Data
+  # MongoDB Server powering hyper Data Services
   - type: pserv
     name: mongodb
     env: docker
     # Change to the desired Render plan
     plan: starter
-    dockerfilePath: ./data/Dockerfile
-    dockerContext: ./data
+    dockerfilePath: ./.mongodb/Dockerfile
+    dockerContext: ./.mongodb
     # Use a Render Disk to persist data
     disk:
       name: mongodbdata
@@ -90,12 +90,12 @@ services:
       - key: MONGO_INITDB_ROOT_PASSWORD
         generateValue: true
 
-  # Redis
+  # Redis Server power hyper Cache and hyper Queue Services
   - type: pserv
     name: redis
     env: docker
-    dockerfilePath: ./cache/Dockerfile
-    dockerContext: ./cache
+    dockerfilePath: ./.redis/Dockerfile
+    dockerContext: ./.redis
     # Change to the desired Render plan
     plan: starter
     autoDeploy: false
@@ -105,15 +105,15 @@ services:
       # Change this value if you'd like more cache storage
       sizeGB: 5
 
-  # Elasticsearch
+  # Elasticsearch power hyper Search Services
   - type: pserv
     name: elasticsearch
     env: docker
     # Change to the desired Render plan
     # NOTE: this has to be at least standard or Elasticsearch errors due to insufficient memory -___-
     plan: standard
-    dockerfilePath: ./search/Dockerfile
-    dockerContext: ./search
+    dockerfilePath: ./.elasticsearch/Dockerfile
+    dockerContext: ./.elasticsearch
     disk:
       name: esdata
       mountPath: /usr/share/elasticsearch/data
@@ -128,15 +128,15 @@ services:
       - key: cluster.name
         value: elastic
 
-  # MinIO Server
+  # MinIO Server to power hyper Storage Services
   # In order for MinIO to accept requests using presigned urls,
   # the server must be made public
   - type: web
     name: minio
     env: docker
     plan: starter
-    dockerfilePath: ./storage/Dockerfile
-    dockerContext: ./storage
+    dockerfilePath: ./.minio/Dockerfile
+    dockerContext: ./.minio
     disk:
       name: miniodata
       mountPath: /data

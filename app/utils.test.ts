@@ -1,4 +1,4 @@
-import { assert, assertEquals, assertThrows } from 'https://deno.land/std@0.199.0/assert/mod.ts';
+import { assert, assertEquals, assertThrows } from 'https://deno.land/std@0.213.0/assert/mod.ts';
 import * as jwt from 'https://deno.land/x/djwt@v2.2/mod.ts';
 
 import { env, verifyAuthorizationHeader } from './utils.ts';
