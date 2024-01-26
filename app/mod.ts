@@ -1,4 +1,4 @@
-import { app, elasticsearch, type express, hyper, minio, mongodb, redis } from './deps.ts';
+import { app, bullmq, elasticsearch, type express, hyper, minio, mongodb, redis } from './deps.ts';
 import { env, verifyAuthorizationHeader } from './utils.ts';
 
 /**
@@ -35,35 +35,49 @@ const authMiddleware =
     return app;
   };
 
+const MONGO_URL = `mongodb://${env('MONGO_USERNAME')}:${env('MONGO_PASSWORD')}@${
+  env('MONGO_HOST')
+}`;
+const REDIS_URL = `http://${env('REDIS_HOST')}:${env('REDIS_PORT')}`;
+const ELASTICSEARCH_URL = `http://${env('ELASTICSEARCH_HOST')}`;
+// Use the public url, so presigned url signatures match
+const MINIO_URL = `https://${env('MINIO_USERNAME')}:${env('MINIO_PASSWORD')}@${
+  env('MINIO_HOST')
+}.onrender.com`;
+
 export default hyper({
   app,
   adapters: [
     {
       port: 'data',
-      plugins: [
-        mongodb({
-          url: `mongodb://${env('MONGO_USERNAME')}:${env('MONGO_PASSWORD')}@${env('MONGO_HOST')}`,
-        }),
-      ],
+      plugins: [mongodb({ url: MONGO_URL })],
     },
     {
       port: 'cache',
-      plugins: [
-        // @ts-ignore incorrect types in the adapter, so safe to ignore for now
-        redis({ hostname: env('REDIS_HOST'), port: env('REDIS_PORT') }),
-      ],
+      plugins: [redis({ url: REDIS_URL })],
     },
-    { port: 'search', plugins: [elasticsearch({ url: `http://${env('ELASTICSEARCH_HOST')}` })] },
-    // Use the public url, so presigned url signatures match
+    {
+      port: 'search',
+      plugins: [elasticsearch({ url: ELASTICSEARCH_URL })],
+    },
     {
       port: 'storage',
       plugins: [
         minio({
-          url: `https://${env('MINIO_USERNAME')}:${env('MINIO_PASSWORD')}@${
-            env('MINIO_HOST')
-          }.onrender.com`,
+          url: MINIO_URL,
           bucketPrefix: 'hyper',
           useNamespacedBucket: false,
+        }),
+      ],
+    },
+    {
+      port: 'queue',
+      plugins: [
+        bullmq({
+          url: REDIS_URL,
+          options: {
+            keyPrefix: 'hyper',
+          },
         }),
       ],
     },

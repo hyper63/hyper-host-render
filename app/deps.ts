@@ -15,4 +15,5 @@ export { default as mongodb } from 'https://raw.githubusercontent.com/hyper63/hy
 export { default as redis } from 'https://raw.githubusercontent.com/hyper63/hyper-adapter-redis/v3.2.2/mod.js';
 export { default as elasticsearch } from 'https://raw.githubusercontent.com/hyper63/hyper-adapter-elasticsearch/v2.0.3/mod.js';
 export { default as minio } from 'https://raw.githubusercontent.com/hyper63/hyper-adapter-minio/v1.0.2/mod.js';
+export { default as bullmq } from 'https://raw.githubusercontent.com/hyper63/hyper-adapter-bullmq/v1.0.1/mod.ts';
 export { default as hooks } from 'https://raw.githubusercontent.com/hyper63/hyper-adapter-hooks/v1.0.6/mod.js';
