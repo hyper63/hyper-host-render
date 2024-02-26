@@ -3,7 +3,7 @@
   "description": "Recipe for deploying the hyper Service Framework to Render using their Infra as Code feature",
   "tasks": {
     "cache": "deno cache --lock=deno.lock --lock-write ./app/deps.ts",
-    "prepare": "deno run -A --no-lock npm:husky@^8 install",
+    "prepare": "deno run -A --no-lock npm:husky@^9",
     "staged": "deno run -A --no-lock npm:lint-staged@^15",
     "test": "deno lint && deno test --no-lock -A"
   },
