@@ -35,15 +35,15 @@ const authMiddleware =
     return app;
   };
 
-const MONGO_URL = `mongodb://${env('MONGO_USERNAME')}:${env('MONGO_PASSWORD')}@${
-  env('MONGO_HOST')
-}`;
+const MONGO_URL = `mongodb://${encodeURIComponent(env('MONGO_USERNAME'))}:${
+  encodeURIComponent(env('MONGO_PASSWORD'))
+}@${env('MONGO_HOST')}`;
 const REDIS_URL = `http://${env('REDIS_HOST')}:${env('REDIS_PORT')}`;
 const ELASTICSEARCH_URL = `http://${env('ELASTICSEARCH_HOST')}`;
 // Use the public url, so presigned url signatures match
-const MINIO_URL = `https://${env('MINIO_USERNAME')}:${env('MINIO_PASSWORD')}@${
-  env('MINIO_HOST')
-}.onrender.com`;
+const MINIO_URL = `https://${encodeURIComponent(env('MINIO_USERNAME'))}:${
+  encodeURIComponent(env('MINIO_PASSWORD'))
+}@${env('MINIO_HOST')}.onrender.com`;
 
 export default hyper({
   app,
